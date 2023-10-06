@@ -1,0 +1,3 @@
+#!/bin/bash
+# Runs the script
+python -m extractor
