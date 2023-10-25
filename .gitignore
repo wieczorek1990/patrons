@@ -1,3 +1,4 @@
 *.swp
+extracted.csv
 .idea/
 __pycache__/

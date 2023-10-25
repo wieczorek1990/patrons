@@ -1,22 +1,23 @@
+import csv
 import itertools
 
-from pyquery import PyQuery as pq  # noqa
+import pyquery
 
 
 def extract_saints(d, position):
-    saints = []  # noqa
+    result = []
 
     selector = f"div.article__text > ul:nth-child({position})> li > a"
     p = d(selector)
 
     for node in p:
-        saints.append(node.text)
-    return saints
+        result.append(node.text)
+    return result
 
 
 def saints():
     # https://parenting.pl/imiona-swietych-swiete-imiona-zenskie-i-meskie
-    d = pq(filename="data/święci.html")
+    d = pyquery.PyQuery(filename="data/święci.html")
     female_saints = extract_saints(d, 12)
     male_saints = extract_saints(d, 16)
     return set(female_saints), set(male_saints)
@@ -57,7 +58,7 @@ def process_patronages(patronages):
 
 def patrons():
     # https://patroni.waw.pl
-    d = pq(filename="data/patroni.html")
+    d = pyquery.PyQuery(filename="data/patroni.html")
     names = td(d, "a")
     patronages = td(d, "b")
 
@@ -67,18 +68,28 @@ def patrons():
     return list(zip(processed_names, processed_patronages))
 
 
+def possible_patrons(patron_names, name):
+    result = []
+    for patron in patron_names:
+        if name in patron:
+            result.append(patron)
+    return result
+
+
 def merge(saints_data, patrons_data):
     name_to_patronage = {name: patronage for name, patronage in patrons_data}
-    merged = []  # noqa
+    patron_names = [name for name, _ in patrons_data]
+    result = []
     for name in saints_data:
         try:
-            patronage = name_to_patronage[name]
+            local_patrons = possible_patrons(patron_names, name)
+            for local_patron in local_patrons:
+                patronage = name_to_patronage[local_patron]
+                result.append((local_patron, patronage))
         except KeyError as exception:
             missing = exception.args[0]
             print(f"Not found: {missing}.")
-        else:
-            merged.append((name, patronage))
-    return merged
+    return result
 
 
 def merged(saints_data, patrons_data):
@@ -111,9 +122,11 @@ def main():
     female_merged_data, male_merged_data = merged_data
     print()
 
-    print("Pretty...")
-    for name, patronage in itertools.chain(female_merged_data, male_merged_data):
-        print(f"{name};{patronage}")
+    print("Saving...")
+    with open("extracted.csv", "w") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for name, patronage in itertools.chain(female_merged_data, male_merged_data):
+            csv_writer.writerow((name, patronage))
     print()
 
     print("Ending...")
