@@ -1,0 +1,3 @@
+#!/bin/bash
+# Installs requirements.
+pip3 install -r extractor/requirements.txt

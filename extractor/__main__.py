@@ -1,5 +1,5 @@
 import itertools
-import pprint
+
 from pyquery import PyQuery as pq
 
 
@@ -23,14 +23,13 @@ def saints():
 
 
 def td(d, td_class):
-    selector = (
-        f"body > div[align=center] > table > tbody > tr > td.{td_class}"
-    )
+    selector = f"body > div[align=center] > table > tbody > tr > td.{td_class}"
     p = d(selector)
     texts = []
     for node in p:
         texts.append(node.text)
     return texts
+
 
 def process_names(names):
     first = True
@@ -70,9 +69,7 @@ def patrons():
 
 
 def merge(saints_data, patrons_data):
-    name_to_patronage = {
-        name: patronage for name, patronage in patrons_data
-    }
+    name_to_patronage = {name: patronage for name, patronage in patrons_data}
     merged = []
     for name in saints_data:
         try:
@@ -116,9 +113,7 @@ def main():
     print()
 
     print("Pretty...")
-    for name, patronage in itertools.chain(
-        female_merged_data, male_merged_data
-    ):
+    for name, patronage in itertools.chain(female_merged_data, male_merged_data):
         print(f"{name};{patronage}")
     print()
 
