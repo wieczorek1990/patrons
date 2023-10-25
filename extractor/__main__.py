@@ -1,10 +1,10 @@
 import itertools
 
-from pyquery import PyQuery as pq
+from pyquery import PyQuery as pq  # noqa
 
 
 def extract_saints(d, position):
-    saints = []
+    saints = []  # noqa
 
     selector = f"div.article__text > ul:nth-child({position})> li > a"
     p = d(selector)
@@ -57,7 +57,6 @@ def process_patronages(patronages):
 
 def patrons():
     # https://patroni.waw.pl
-    patrons = []
     d = pq(filename="data/patroni.html")
     names = td(d, "a")
     patronages = td(d, "b")
@@ -70,7 +69,7 @@ def patrons():
 
 def merge(saints_data, patrons_data):
     name_to_patronage = {name: patronage for name, patronage in patrons_data}
-    merged = []
+    merged = []  # noqa
     for name in saints_data:
         try:
             patronage = name_to_patronage[name]
